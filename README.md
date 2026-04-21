@@ -79,7 +79,7 @@ oc_sessions/
 │   │   ├── services/    # 业务逻辑
 │   │   └── types/       # TypeScript 类型
 │   └── package.json
-└── design/            # 设计文档
+└── docs/              # 文档和截图
 ```
 
 ## 快速开始
