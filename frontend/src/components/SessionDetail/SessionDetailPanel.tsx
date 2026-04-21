@@ -96,7 +96,7 @@ interface SessionDetailPanelProps {
 
 export function SessionDetailPanel({ session, onDelete }: SessionDetailPanelProps) {
   const { data: messages, isLoading, refetch: refetchMessages, isFetching } = useSessionMessages(session.id, { refetchInterval: 10000 });
-  const { data: stats, refetch: refetchStats } = useSessionStats(session.id);
+  const { data: stats, refetch: refetchStats } = useSessionStats(session.id, { refetchInterval: 10000 });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
