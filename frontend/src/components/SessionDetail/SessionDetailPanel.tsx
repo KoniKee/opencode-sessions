@@ -7,6 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import DescriptionIcon from '@mui/icons-material/Description';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useState, useMemo, useRef, useCallback, memo } from 'react';
@@ -94,8 +95,8 @@ interface SessionDetailPanelProps {
 }
 
 export function SessionDetailPanel({ session, onDelete }: SessionDetailPanelProps) {
-  const { data: messages, isLoading } = useSessionMessages(session.id);
-  const { data: stats } = useSessionStats(session.id);
+  const { data: messages, isLoading, refetch: refetchMessages, isFetching } = useSessionMessages(session.id, { refetchInterval: 10000 });
+  const { data: stats, refetch: refetchStats } = useSessionStats(session.id);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -275,6 +276,18 @@ export function SessionDetailPanel({ session, onDelete }: SessionDetailPanelProp
           )}
         </Box>
         <Box sx={{ display: 'flex', gap: 0.5 }}>
+          <Tooltip title="刷新">
+            <IconButton 
+              onClick={() => { refetchMessages(); refetchStats(); }}
+              disabled={isFetching}
+              sx={{ 
+                color: 'text.secondary',
+                '&:hover': { color: 'primary.main', bgcolor: 'primary.lighter' }
+              }}
+            >
+              <RefreshIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
           <IconButton 
             onClick={handleEditClick}
             sx={{ 

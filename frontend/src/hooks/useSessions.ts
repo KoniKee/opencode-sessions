@@ -59,12 +59,13 @@ export function useSession(id: string) {
   });
 }
 
-export function useSessionMessages(id: string) {
+export function useSessionMessages(id: string, options?: { refetchInterval?: number }) {
   return useQuery<Message[]>({
     queryKey: ['messages', id],
     queryFn: () => api.sessions.getMessages(id),
     enabled: !!id,
-    staleTime: 30000,
+    staleTime: 5000,
+    refetchInterval: options?.refetchInterval,
   });
 }
 
@@ -77,12 +78,13 @@ export function useSessionDiff(id: string) {
   });
 }
 
-export function useSessionStats(id: string) {
+export function useSessionStats(id: string, options?: { refetchInterval?: number }) {
   return useQuery<SessionStats>({
     queryKey: ['sessionStats', id],
     queryFn: () => api.sessions.getStats(id),
     enabled: !!id,
-    staleTime: 30000,
+    staleTime: 5000,
+    refetchInterval: options?.refetchInterval,
   });
 }
 
