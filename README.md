@@ -15,33 +15,43 @@
 - **设置页面** - 查看和配置数据库路径
 
 ## 效果图
+
 会话消息展示（子agent会话关联显示在主会话下一层级）
+
 ![会话消息](./docs/screenshots/会话消息展示.png)
 
 subagent标识
+
 ![subagent标识](./docs/screenshots/subagent标识.png)
 
 Markdown 语法渲染
+
 ![md语法渲染](./docs/screenshots/md格式渲染.png)
 
 文件代码差异
+
 ![文件代码差异](./docs/screenshots/文件代码差异.png)
 ![diff](./docs/screenshots/diff.png)
 
 会话删除（可关联删除子会话，也可单独删除主会话）
+
 ![会话删除](./docs/screenshots/删除会话.png)
 ![孤立会话](./docs/screenshots/孤立会话.png)
 
 重命名会话
+
 ![重命名会话](./docs/screenshots/重命名会话.png)
 
 批量删除会话
+
 ![批量删除会话](./docs/screenshots/批量删除会话.png)
 
 消息跳转
+
 ![消息跳转](./docs/screenshots/timeline跳转.png)
 
 opencode数据库位置配置
+
 ![数据库配置](./docs/screenshots/数据库配置.png)
 
 ## 技术栈
