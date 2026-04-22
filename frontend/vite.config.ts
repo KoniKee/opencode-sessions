@@ -9,5 +9,9 @@ export default defineConfig(({ mode }) => {
       port: parseInt(env.VITE_PORT || '9000'),
       host: true,
     },
+    preview: {
+      port: parseInt(env.VITE_PORT || '9000'),
+      host: true,
+    },
   }
 })

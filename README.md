@@ -152,15 +152,26 @@ npm run dev
 ### 构建生产版本
 
 ```bash
-# 构建后端
+# 构建并启动后端
 cd backend
 npm run build
 npm start
 
-# 构建前端
+# 构建并启动前端
 cd ../frontend
 npm run build
+npm start
 ```
+
+### 命令说明
+
+| 命令 | 后端 | 前端 |
+|------|------|------|
+| `npm run dev` | 开发模式（ts-node） | 开发模式（Vite） |
+| `npm run build` | 编译 TypeScript | 构建静态文件 |
+| `npm start` | 运行生产版本 | 预览生产版本 |
+
+**注意**：`npm start` 需要先执行 `npm run build`。
 
 ## 数据库
 
