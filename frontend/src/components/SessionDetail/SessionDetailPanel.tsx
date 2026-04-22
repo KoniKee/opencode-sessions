@@ -1,4 +1,4 @@
-import { Box, Typography, Chip, Drawer, IconButton, List, ListItem, Avatar, Button, Dialog, DialogTitle, DialogContent, DialogActions, Alert, CircularProgress, TextField, Tooltip, ListItemText, GlobalStyles } from '@mui/material';
+import { Box, Typography, Chip, Drawer, IconButton, List, ListItem, Avatar, Button, Dialog, DialogTitle, DialogContent, DialogActions, Alert, CircularProgress, TextField, Tooltip, ListItemText, GlobalStyles, Link } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import SmartToyIcon from '@mui/icons-material/SmartToy';
 import PersonIcon from '@mui/icons-material/Person';
@@ -8,6 +8,11 @@ import ListAltIcon from '@mui/icons-material/ListAlt';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import DescriptionIcon from '@mui/icons-material/Description';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import BuildIcon from '@mui/icons-material/Build';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { useState, useMemo, useRef, useCallback, memo } from 'react';
@@ -505,7 +510,7 @@ const MessageItem = memo(function MessageItem({ message, index, registerRef, hig
   const diffs: DiffFile[] = content.summary?.diffs || [];
   
   // 缓存 parts 解析
-  const { reasoningContent, rawTextContent } = useMemo(() => {
+  const { reasoningContent, rawTextContent, toolCalls } = useMemo(() => {
     const partContent = message.parts?.map(p => {
       try {
         return JSON.parse(p.data);
@@ -516,10 +521,12 @@ const MessageItem = memo(function MessageItem({ message, index, registerRef, hig
     
     const reasoningParts = partContent.filter(p => p.type === 'reasoning');
     const textParts = partContent.filter(p => p.type === 'text');
+    const toolParts = partContent.filter(p => p.type === 'tool');
     
     return {
       reasoningContent: reasoningParts.map(p => p.text || '').join('\n'),
       rawTextContent: textParts.map(p => p.text || '').join('\n') || content.content || '',
+      toolCalls: toolParts,
     };
   }, [message.parts, content.content]);
 
@@ -731,6 +738,90 @@ const MessageItem = memo(function MessageItem({ message, index, registerRef, hig
                         </ReactMarkdown>
                       )}
                     </Box>
+                  </Box>
+                )}
+                {toolCalls && toolCalls.length > 0 && (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, maxWidth: '85%' }}>
+                    {toolCalls.map((tool: any, idx: number) => {
+                      const toolName = tool.tool || 'unknown';
+                      const status = tool.state?.status || 'unknown';
+                      const title = tool.title || '';
+                      const isTask = toolName === 'task';
+                      const subagentType = tool.state?.input?.subagent_type;
+                      const description = tool.state?.input?.description;
+                      
+                      let sessionId: string | null = null;
+                      if (isTask && tool.state?.output) {
+                        const match = tool.state.output.match(/task_id:\s*(ses_[a-zA-Z0-9]+)/);
+                        if (match) {
+                          sessionId = match[1];
+                        }
+                      }
+                      
+                      const StatusIcon = status === 'completed' ? CheckCircleIcon : status === 'error' ? ErrorIcon : HourglassEmptyIcon;
+                      const statusColor = status === 'completed' ? '#4caf50' : status === 'error' ? '#f44336' : '#ff9800';
+                      
+                      return (
+                        <Box 
+                          key={idx}
+                          sx={{ 
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                            p: 1,
+                            borderRadius: 1,
+                            bgcolor: '#f8f9fa',
+                            border: '1px solid #e0e0e0',
+                            fontSize: '0.8rem',
+                          }}
+                        >
+                          <BuildIcon sx={{ fontSize: 16, color: '#666' }} />
+                          <StatusIcon sx={{ fontSize: 16, color: statusColor }} />
+                          <Box sx={{ flex: 1, minWidth: 0 }}>
+                            {isTask ? (
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Typography sx={{ fontWeight: 500, color: '#333' }}>
+                                  @{subagentType || 'task'}
+                                </Typography>
+                                {description && (
+                                  <Typography sx={{ color: '#666', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {description}
+                                  </Typography>
+                                )}
+                              </Box>
+                            ) : (
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Typography sx={{ fontWeight: 500, color: '#333' }}>
+                                  {toolName}
+                                </Typography>
+                                {title && (
+                                  <Typography sx={{ color: '#666', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                    {title}
+                                  </Typography>
+                                )}
+                              </Box>
+                            )}
+                          </Box>
+                          {isTask && sessionId && (
+                            <Link 
+                              href={`/sessions/${sessionId}`}
+                              sx={{ 
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 0.5,
+                                fontSize: '0.75rem',
+                                color: '#1976d2',
+                                textDecoration: 'none',
+                                '&:hover': { textDecoration: 'underline' },
+                              }}
+                            >
+                              <OpenInNewIcon sx={{ fontSize: 14 }} />
+                              查看子会话
+                            </Link>
+                          )}
+                        </Box>
+                      );
+                    })}
                   </Box>
                 )}
                 {textContent && (
